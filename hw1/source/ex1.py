@@ -1,6 +1,7 @@
 import search
 import random
 import math
+from copy import deepcopy
 from utils import hashabledict, vector_add
 
 ids = ["111111111", "111111111"]
@@ -155,11 +156,13 @@ class SokobanProblem(search.Problem):
     def goal_test(self, state):
         """ Given a state, checks if this is the goal state.
          Returns True if it is, False otherwise."""
+        return all([(box in state.targets) for box in state.box])
 
     def h(self, node):
         """ This is the heuristic. It gets a node (not a state,
         state can be accessed via node.state)
         and returns a goal distance estimate"""
+        return node.state.box_left
 
     """Feel free to add your own functions"""
 
