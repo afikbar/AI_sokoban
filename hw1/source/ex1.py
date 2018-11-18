@@ -75,7 +75,7 @@ class State(object):
     def __hash__(self):
         return hash(hashabledict(self._grid))  # consider adding hash for ghosts cnt\dist?
 
-ids = ["111111111", "111111111"]
+    def print(self, depth=0):
 
 
 class SokobanProblem(search.Problem):
@@ -110,6 +110,47 @@ class SokobanProblem(search.Problem):
         """Return the state that results from executing the given
         action in the given state. The action must be one of
         self.actions(state)."""
+        rslt = deepcopy(state)
+        grid = rslt.grid
+        step = DIRECTIONS[action]
+
+        aim_cords = vector_add(rslt.player, step)
+        grid[rslt.player] -= 7  # returns cell to its default value without player
+
+        if grid[aim_cords] in BOX:  # from action no blocking box is allowed (a move that won't change anything)
+            box_cords = aim_cords
+
+            if box_cords in rslt.targets:  # if we moved a box from target pos
+                rslt.box_left += 1
+
+            grid[box_cords] -= 5  # returns cell to its value without box
+            rslt.box.remove(box_cords)
+
+            seq_cell = vector_add(box_cords, step) # the sequential cell in same direction
+
+            while grid[seq_cell] == ICE[0]:
+                box_cords = seq_cell
+                seq_cell = vector_add(box_cords, step)
+
+            if grid[seq_cell] in [CELL, TARGET[0]]:
+                box_cords = seq_cell
+
+            if box_cords in rslt.targets:
+                rslt.box_left -= 1
+
+            grid[box_cords] += 5
+            rslt.box.append(box_cords)
+
+        seq_cell = aim_cords
+        while grid[seq_cell] == ICE[0]:
+            aim_cords = seq_cell
+            seq_cell = vector_add(aim_cords, step)
+        # todo: Understand if box can init on ice(without blocking), and thus jam (or move with player?)
+        rslt.player = aim_cords
+        # todo: update grid with player pos
+        grid[rslt.player] += 7
+
+        return rslt
 
     def goal_test(self, state):
         """ Given a state, checks if this is the goal state.
@@ -125,4 +166,3 @@ class SokobanProblem(search.Problem):
 
 def create_sokoban_problem(game):
     return SokobanProblem(game)
-
