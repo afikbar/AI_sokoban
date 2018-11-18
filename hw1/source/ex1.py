@@ -80,16 +80,31 @@ ids = ["111111111", "111111111"]
 
 class SokobanProblem(search.Problem):
     """This class implements a sokoban problem"""
+
     def __init__(self, initial):
         """Don't forget to implement the goal test
         You should change the initial to your own representation"""
-        search.Problem.__init__(self, initial)
-        
+        self._mapSize = (len(initial), len(initial[0]))  # N x M
+        search.Problem.__init__(self, State(initial))
+
     def actions(self, state):
         """Return the actions that can be executed in the given
         state. The result would typically be a tuple, but if there are
         many actions, consider yielding them one at a time in an
         iterator, rather than building them all at once."""
+        # todo: remove unsolveable states
+        p_cords = state.player
+        grid = state.grid
+        for direction, step in DIRECTIONS.items():
+            aim_cords = vector_add(p_cords, step)
+            # res_cords = p_cords if state.grid[aim_cords] == WALL else aim_cords
+            if grid[aim_cords] == WALL:
+                continue
+            if grid[aim_cords] in BOX: # if tries to move a box
+                seq_cell = vector_add(aim_cords, step)
+                if grid[seq_cell] in BOX + [WALL]:  # Ignore actions that has no effect
+                    continue
+            yield direction
 
     def result(self, state, action):
         """Return the state that results from executing the given

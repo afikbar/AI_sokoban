@@ -56,3 +56,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# PyCharm
+.idea/
+hw1/source/temp\.csv
