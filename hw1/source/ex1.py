@@ -3,6 +3,7 @@ import random
 import math
 from copy import deepcopy
 from utils import hashabledict, vector_add
+import sys
 
 ids = ["111111111", "111111111"]
 
@@ -77,6 +78,18 @@ class State(object):
         return hash(hashabledict(self._grid))  # consider adding hash for ghosts cnt\dist?
 
     def print(self, depth=0):
+        temp = sys.stdout
+        sys.stdout = open("temp.csv", 'a')
+        print(" State {}:\n".format(depth))
+        row = 0
+        for cord, ele in self._grid.items():
+            if row != cord[0]:
+                print("\n")
+                row = row + 1
+            print(ele, ", ", end='')
+        print("\n")
+        sys.stdout.close()
+        sys.stdout = temp
 
 
 class SokobanProblem(search.Problem):
