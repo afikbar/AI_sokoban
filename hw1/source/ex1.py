@@ -140,7 +140,7 @@ class SokobanProblem(search.Problem):
             grid[box_cords] -= 5  # returns cell to its value without box
             rslt.box.remove(box_cords)
 
-            seq_cell = vector_add(box_cords, step) # the sequential cell in same direction
+            seq_cell = vector_add(box_cords, step)  # the sequential cell in same direction
 
             while grid[seq_cell] == ICE[0]:
                 box_cords = seq_cell
@@ -154,14 +154,14 @@ class SokobanProblem(search.Problem):
 
             grid[box_cords] += 5
             rslt.box.append(box_cords)
-
-        seq_cell = aim_cords
-        while grid[seq_cell] == ICE[0]:
-            aim_cords = seq_cell
-            seq_cell = vector_add(aim_cords, step)
+        else:
+            seq_cell = aim_cords
+            while grid[seq_cell] == ICE[0]:
+                aim_cords = seq_cell
+                seq_cell = vector_add(aim_cords, step)
         # todo: Understand if box can init on ice(without blocking), and thus jam (or move with player?)
         rslt.player = aim_cords
-        # todo: update grid with player pos
+        # update grid with player pos
         grid[rslt.player] += 7
 
         return rslt
