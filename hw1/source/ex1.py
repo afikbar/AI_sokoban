@@ -16,6 +16,10 @@ PLAYER = [17, 27, 37]  # player, +target, +ice
 DIRECTIONS = {'R': (0, 1), 'D': (1, 0), 'L': (0, -1), 'U': (- 1, 0)}  # order matters
 
 
+def man_dist(start: tuple, end: tuple) -> int:
+    return abs(start[0] - end[0]) + abs(start[1] - end[1])
+
+
 class State(object):
 
     def __init__(self, grid):
@@ -193,7 +197,18 @@ class SokobanProblem(search.Problem):
         """ This is the heuristic. It gets a node (not a state,
         state can be accessed via node.state)
         and returns a goal distance estimate"""
-        return node.state.box_left
+        state = node.state
+        # todo:  sum of the distances of each box to its nearest goal.
+        sum_min_md_box_target = 0
+        for box in state.box:
+            box_md_target = [man_dist(box, target) for target in state.targets]
+            sum_min_md_box_target += min(box_md_target)
+
+        # todo: box is assigned to a goal so that the total sum of distances is minimized.
+
+
+        return state.box_left
+        # return sum_min_md_box_target # worst (58 steps) on 4th one
 
     """Feel free to add your own functions"""
 
