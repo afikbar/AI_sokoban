@@ -68,6 +68,7 @@ class State(object):
 
     # endregion
 
+    # region hash
     def __eq__(self, other):
         return isinstance(other, State) and self._grid.__eq__(other.grid)
 
@@ -75,7 +76,9 @@ class State(object):
         return isinstance(other, State) and (self._box_left.__lt__(other._box_left))
 
     def __hash__(self):
-        return hash(hashabledict(self._grid))  # consider adding hash for ghosts cnt\dist?
+        return hash(hashabledict(self._grid))
+
+    # endregion
 
     def print(self, depth=0):
         temp = sys.stdout
@@ -90,6 +93,18 @@ class State(object):
         print("\n")
         sys.stdout.close()
         sys.stdout = temp
+
+    def is_corner(self, pos):  # todo: improve to any kind of deadlock (boxes etc)
+
+        steps = [(0, 1), (1, 0), (0, -1), (- 1, 0)]  # order is: R,D,L,U
+        neighbor_cells = [vector_add(pos, step) for step in steps]
+        is_last_cell_wall = self._grid[neighbor_cells[3]] == WALL
+        for cell in neighbor_cells:
+            is_curr_cell_wall = self._grid[cell] == WALL
+            if is_last_cell_wall and is_curr_cell_wall:
+                return True;
+            is_last_cell_wall = is_curr_cell_wall
+        return False
 
 
 class SokobanProblem(search.Problem):
@@ -106,7 +121,7 @@ class SokobanProblem(search.Problem):
         state. The result would typically be a tuple, but if there are
         many actions, consider yielding them one at a time in an
         iterator, rather than building them all at once."""
-        # todo: remove unsolveable states
+        # todo: remove unsolvable states (box to corner)
         p_cords = state.player
         grid = state.grid
         for direction, step in DIRECTIONS.items():
@@ -114,9 +129,12 @@ class SokobanProblem(search.Problem):
             # res_cords = p_cords if state.grid[aim_cords] == WALL else aim_cords
             if grid[aim_cords] == WALL:
                 continue
-            if grid[aim_cords] in BOX: # if tries to move a box
+            if grid[aim_cords] in BOX:  # if tries to move a box
                 seq_cell = vector_add(aim_cords, step)
                 if grid[seq_cell] in BOX + [WALL]:  # Ignore actions that has no effect
+                    continue
+                # else, box can be moved -> check if not pushing to corner (unless it's target):
+                if seq_cell not in state.targets and state.is_corner(seq_cell):
                     continue
             yield direction
 
