@@ -28,6 +28,7 @@ class State(object):
         self._box = [cord for cord, ele in self._grid.items() if ele in BOX]
         self._targets = [cord for cord, ele in self._grid.items() if ele in TARGET]
         self._box_left = len([box for box in self._box if box not in self._targets])
+        self._target_left = len([cord for cord in self._targets if cord not in self._box])
 
     # region Properties
     @property
@@ -69,6 +70,14 @@ class State(object):
     @box_left.setter
     def box_left(self, cnt):
         self._box_left = cnt
+
+    @property
+    def target_left(self):
+        return self._target_left
+
+    @target_left.setter
+    def target_left(self, cnt):
+        self._target_left = cnt
 
     # endregion
 
@@ -137,6 +146,8 @@ class SokobanProblem(search.Problem):
         # todo: remove unsolvable states (box to corner)
         p_cords = state.player
         grid = state.grid
+        if state.target_left > state.box_left:  # if unsolvable (more targets than boxes)
+            return None
         for direction, step in DIRECTIONS.items():
             aim_cords = vector_add(p_cords, step)
             # res_cords = p_cords if state.grid[aim_cords] == WALL else aim_cords
@@ -147,7 +158,8 @@ class SokobanProblem(search.Problem):
                 if grid[seq_cell] in BOX + [WALL]:  # Ignore actions that has no effect
                     continue
                 # else, box can be moved -> check if not pushing to corner (unless it's target):
-                if seq_cell not in state.targets and state.is_corner(seq_cell):
+                if seq_cell not in state.targets and (  # check if have box to spare
+                        state.is_corner(seq_cell) and state.target_left == state.box_left):
                     continue
             yield direction
 
@@ -167,6 +179,7 @@ class SokobanProblem(search.Problem):
 
             if box_cords in rslt.targets:  # if we moved a box from target pos
                 rslt.box_left += 1
+                rslt.target_left += 1
 
             grid[box_cords] -= 5  # returns cell to its value without box
             rslt.box.remove(box_cords)
@@ -182,6 +195,7 @@ class SokobanProblem(search.Problem):
 
             if box_cords in rslt.targets:
                 rslt.box_left -= 1
+                rslt.target_left -= 1
 
             grid[box_cords] += 5
             rslt.box.append(box_cords)
@@ -200,7 +214,8 @@ class SokobanProblem(search.Problem):
     def goal_test(self, state):
         """ Given a state, checks if this is the goal state.
          Returns True if it is, False otherwise."""
-        return all([(box in state.targets) for box in state.box])
+        # return all([(box in state.targets) for box in state.box])
+        return state.target_left == 0
 
     def h(self, node):
         """ This is the heuristic. It gets a node (not a state,
@@ -215,9 +230,9 @@ class SokobanProblem(search.Problem):
 
         # todo: box is assigned to a goal so that the total sum of distances is minimized.
 
-
-        return state.box_left
-        # return sum_min_md_box_target # worst (58 steps) on 4th one
+        # return state.box_left
+        return sum_min_md_box_target # worst (58 steps) on 4th one
+        # return state.target_left
 
     """Feel free to add your own functions"""
 
