@@ -222,17 +222,23 @@ class SokobanProblem(search.Problem):
         state can be accessed via node.state)
         and returns a goal distance estimate"""
         state = node.state
-        # todo:  sum of the distances of each box to its nearest goal.
-        sum_min_md_box_target = 0
-        for box in state.box:
-            box_md_target = [man_dist(box, target) for target in state.targets]
-            sum_min_md_box_target += min(box_md_target)
+
+        # sum of the distances of each target to its nearest box (using box once).
+        sum_min_md_target_box = 0
+        curr_boxes = state.box[:]
+        for target in state.targets:
+            target_md_box = [(box, man_dist(target, box)) for box in curr_boxes]
+            closest_box = min(target_md_box, key=lambda box: box[1])
+            curr_boxes.remove(closest_box[0])  # removes "used" box
+            sum_min_md_target_box += closest_box[1]
 
         # todo: box is assigned to a goal so that the total sum of distances is minimized.
-
+        if state.target_left == 0:
+            return 0
         # return state.box_left
-        return sum_min_md_box_target # worst (58 steps) on 4th one
         # return state.target_left
+        # sum of man_dist from targets to nearest box with factor of more box than targets
+        return sum_min_md_target_box * (state.target_left / state.box_left)
 
     """Feel free to add your own functions"""
 
