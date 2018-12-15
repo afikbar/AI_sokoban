@@ -85,18 +85,16 @@ class State(object):
     # endregion
 
     def print(self, depth=0):
-        temp = sys.stdout
-        sys.stdout = open("temp.csv", 'a')
-        print(" State {}:\n".format(depth))
-        row = 0
-        for cord, ele in self._grid.items():
-            if row != cord[0]:
-                print("\n")
-                row = row + 1
-            print(ele, ", ", end='')
-        print("\n")
-        sys.stdout.close()
-        sys.stdout = temp
+        # temp = sys.stdout
+        with open("temp.csv", 'a') as f:
+            f.write("\n    State {}:\n".format(depth))
+            row = 0
+            for cord, ele in self._grid.items():
+                if row != cord[0]:
+                    f.write("\n")
+                    row = row + 1
+                f.write("{}, ".format(ele))
+            f.write("\n")
 
     def is_corner(self, pos):  # todo: improve to any kind of deadlock (boxes etc)
 
