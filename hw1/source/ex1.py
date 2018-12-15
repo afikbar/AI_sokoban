@@ -109,6 +109,17 @@ class State(object):
         return False
 
 
+def grid_wrap(grid):
+    walled = (
+            ((99,) * (len(grid[0]) + 2),) +
+            tuple(((99,) + tuple(x for x in row) + (99,)) for row in grid) +
+            ((99,) * (len(grid[0]) + 2),)
+
+    )
+    # print(walled)
+    return walled
+
+
 class SokobanProblem(search.Problem):
     """This class implements a sokoban problem"""
 
@@ -116,7 +127,7 @@ class SokobanProblem(search.Problem):
         """Don't forget to implement the goal test
         You should change the initial to your own representation"""
         self._mapSize = (len(initial), len(initial[0]))  # N x M
-        search.Problem.__init__(self, State(initial))
+        search.Problem.__init__(self, State(grid_wrap(initial)))
 
     def actions(self, state):
         """Return the actions that can be executed in the given
