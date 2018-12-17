@@ -105,8 +105,8 @@ class State(object):
                 f.write("{}, ".format(ele))
             f.write("\n")
 
-    def is_corner(self, pos):  # todo: improve to any kind of deadlock (boxes etc)
-
+    def is_corner(self, pos):  # todo: improve to any kind of deadlock (boxes around etc)
+        # todo: add inspection for borders that box will get stuck there
         steps = [(0, 1), (1, 0), (0, -1), (- 1, 0)]  # order is: R,D,L,U
         neighbor_cells = [vector_add(pos, step) for step in steps]
         is_last_cell_wall = self._grid[neighbor_cells[3]] == WALL
@@ -205,6 +205,8 @@ class SokobanProblem(search.Problem):
             while grid[seq_cell] == ICE[0]:
                 aim_cords = seq_cell
                 seq_cell = vector_add(aim_cords, step)
+            if grid[seq_cell] in [CELL, TARGET[0]]:  # if player can go out of ice
+                aim_cords = seq_cell
         # todo: Understand if box can init on ice(without blocking), and thus jam (or move with player?)
         rslt.player = aim_cords
         # update grid with player pos
