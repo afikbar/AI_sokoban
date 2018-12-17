@@ -86,7 +86,7 @@ class State(object):
         return isinstance(other, State) and self._grid.__eq__(other.grid)
 
     def __lt__(self, other):
-        return isinstance(other, State) and (self._box_left.__lt__(other._box_left))
+        return isinstance(other, State) and (self._target_left.__lt__(other.target_left))
 
     def __hash__(self):
         return hash(hashabledict(self._grid))
@@ -161,6 +161,7 @@ class SokobanProblem(search.Problem):
                 if seq_cell not in state.targets and (  # check if have box to spare
                         state.is_corner(seq_cell) and state.target_left == state.box_left):
                     continue
+
             yield direction
 
     def result(self, state, action):
@@ -235,6 +236,8 @@ class SokobanProblem(search.Problem):
         # todo: box is assigned to a goal so that the total sum of distances is minimized.
         if state.target_left == 0:
             return 0
+        if state.box_left == 0:
+            return sys.maxsize
         # return state.box_left
         # return state.target_left
         # sum of man_dist from targets to nearest box with factor of more box than targets
