@@ -61,3 +61,5 @@ target/
 # PyCharm
 .idea/
 hw1/source/temp\.csv
+
+hw1/source/ex1_emanuella\.py

@@ -143,7 +143,6 @@ class SokobanProblem(search.Problem):
         state. The result would typically be a tuple, but if there are
         many actions, consider yielding them one at a time in an
         iterator, rather than building them all at once."""
-        # todo: remove unsolvable states (box to corner)
         p_cords = state.player
         grid = state.grid
         if state.target_left > state.box_left:  # if unsolvable (more targets than boxes)
