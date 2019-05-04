@@ -68,7 +68,7 @@ class Checker:
                 elif action == "R":
                     third_tile = (next_tile[0], next_tile[1] + 1)
                 elif action == "L":
-                    third_tile = (next_tile[0], next_tile[1] + 1)
+                    third_tile = (next_tile[0], next_tile[1] - 1)
                 if self.current_state[next_tile] != CODES["ice"] or self.current_state[third_tile] not in TRAVERSABLE:
                     self.current_state[next_tile] += 5
                     break
@@ -82,7 +82,7 @@ class Checker:
                 elif action == "R":
                     third_tile = (next_tile[0], next_tile[1] + 1)
                 elif action == "L":
-                    third_tile = (next_tile[0], next_tile[1] + 1)
+                    third_tile = (next_tile[0], next_tile[1] - 1)
             self.current_state[current_tile] -= 7
             self.current_state[next_tile] += 7
 
