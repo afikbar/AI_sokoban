@@ -224,6 +224,12 @@ class SokobanProblem(search.Problem):
         state can be accessed via node.state)
         and returns a goal distance estimate"""
         state = node.state
+        grid = state.grid
+
+        if state.target_left == 0:
+            return 0
+        if state.box_left == 0:
+            return sys.maxsize
 
         # sum of the distances of each target to its nearest box (using box once).
         sum_min_md_target_box = 0
@@ -235,14 +241,16 @@ class SokobanProblem(search.Problem):
             sum_min_md_target_box += closest_box[1]
 
         # todo: box is assigned to a goal so that the total sum of distances is minimized.
-        if state.target_left == 0:
-            return 0
-        if state.box_left == 0:
-            return sys.maxsize
+
+        # nearest box not in target to player:
+        box_not_in_target_md = [man_dist(state.player, box) for box in state.box if grid[box] not in TARGET]
+        player_box_md = min(box_not_in_target_md)
+        # todo: agent wont put box in place because it will result in increase of min dist
+
         # return state.box_left
         # return state.target_left
         # sum of man_dist from targets to nearest box with factor of more box than targets
-        return sum_min_md_target_box * (state.target_left / state.box_left)
+        return sum_min_md_target_box * (state.target_left / state.box_left) # + player_box_md + state.box_left * len(grid)
 
     """Feel free to add your own functions"""
 

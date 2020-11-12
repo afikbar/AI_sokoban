@@ -249,10 +249,9 @@ def main():
             (10, 99, 10, 99, 10, 15, 10, 10, 99),
             (10, 99, 17, 10, 20, 99, 99, 99, 99),
             (10, 99, 99, 99, 99, 99, 99, 99, 99),
-        )
-
+        ),
     ]
-    unsolvables = [
+    longer_problems = [
         # unsolvable:
         (
             (99, 99, 99, 99, 99, 99, 99, 99),
@@ -830,7 +829,7 @@ def main():
             (10, 99, 99, 99, 99, 10, 10, 10, 10, 10, 10, 10, 10, 10,),
         ),
     ]
-    solve_problems(new_problems[0:1])
+    solve_problems(problems + my_problems + longer_problems)
 
 
 if __name__ == '__main__':
